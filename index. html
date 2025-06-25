@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Salary Calculator (UGX)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fff;
+      color: #000;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      width: 48%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #006400;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004d00;
+    }
+
+    #result {
+      margin-top: 25px;
+      font-size: 17px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" lang="en">
+    <h1>Salary Calculator (UGX)</h1>
+    <form id="salaryForm">
+      <div class="form-group">
+        <label for="totalSalary">Total Salary (UGX)</label>
+        <input type="number" id="totalSalary" placeholder="Enter your total salary" required>
+      </div>
+      <div class="form-group">
+        <label for="totalWorkingDays">Total Working Days in Month</label>
+        <input type="number" id="totalWorkingDays" placeholder="Enter total working days in month" required>
+      </div>
+      <div class="form-group">
+        <label for="totalWorkedDays">Total Worked Days</label>
+        <input type="number" id="totalWorkedDays" placeholder="Enter total worked days" required>
+      </div>
+      <div class="form-group">
+        <label for="weekOff">Week Offs</label>
+        <input type="number" id="weekOff" placeholder="Enter number of week offs" required>
+      </div>
+      <div class="form-group">
+        <label for="paidLeave">Paid Leave</label>
+        <input type="number" id="paidLeave" placeholder="Enter paid leave days" required>
+      </div>
+      <div class="form-group">
+        <label for="casualLeave">Casual Leave</label>
+        <input type="number" id="casualLeave" placeholder="Enter casual leave days" required>
+      </div>
+      <div class="form-group">
+        <label for="noPay">No Pay Leave</label>
+        <input type="number" id="noPay" placeholder="Enter no-pay leave days" required>
+      </div>
+      <div class="form-group">
+        <label for="doublePay">Double Pay (Overtime)</label>
+        <input type="number" id="doublePay" placeholder="Enter overtime (double pay) days" required>
+      </div>
+      <div class="form-group">
+        <label for="lateMinutes">Late Minutes (Deduction)</label>
+        <input type="number" id="lateMinutes" placeholder="Enter late minutes (if any)" required>
+      </div>
+      <div class="button-group">
+        <button type="button" onclick="calculateSalary()">Calculate</button>
+        <button type="reset">Reset</button>
+      </div>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function calculateSalary() {
+      const totalSalary = parseFloat(document.getElementById('totalSalary').value);
+      const totalWorkingDays = parseInt(document.getElementById('totalWorkingDays').value);
+      const totalWorkedDays = parseInt(document.getElementById('totalWorkedDays').value);
+      const weekOff = parseInt(document.getElementById('weekOff').value);
+      const paidLeave = parseInt(document.getElementById('paidLeave').value);
+      const casualLeave = parseInt(document.getElementById('casualLeave').value);
+      const noPay = parseInt(document.getElementById('noPay').value);
+      const doublePay = parseInt(document.getElementById('doublePay').value);
+      const lateMinutes = parseInt(document.getElementById('lateMinutes').value);
+
+      if (
+        isNaN(totalSalary) || totalSalary <= 0 ||
+        isNaN(totalWorkingDays) || totalWorkingDays <= 0 ||
+        isNaN(totalWorkedDays) || totalWorkedDays < 0 ||
+        isNaN(weekOff) || weekOff < 0 ||
+        isNaN(paidLeave) || paidLeave < 0 ||
+        isNaN(casualLeave) || casualLeave < 0 ||
+        isNaN(noPay) || noPay < 0 ||
+        isNaN(doublePay) || doublePay < 0 ||
+        isNaN(lateMinutes) || lateMinutes < 0
+      ) {
+        alert("Please enter valid numbers.");
+        return;
+      }
+
+      const dailySalary = totalSalary / totalWorkingDays;
+      const noPayDeduction = dailySalary * noPay;
+      const casualLeavePay = dailySalary * casualLeave;
+      const weekOffPay = dailySalary * weekOff;
+      const paidLeavePay = dailySalary * paidLeave;
+      const lateMinutesDeduction = (lateMinutes / 540) * dailySalary;
+      const doublePayAddition = dailySalary * doublePay;
+
+      const finalSalary = (totalWorkedDays * dailySalary) 
+        - noPayDeduction 
+        - lateMinutesDeduction 
+        + doublePayAddition 
+        + weekOffPay 
+        + paidLeavePay 
+        + casualLeavePay;
+
+      document.getElementById('result').innerHTML = `
+        <p>Final Salary: <strong>UGX ${finalSalary.toFixed(2)}</strong></p>
+        <p>Salary Breakdown:</p>
+        <ul>
+          <li>Daily Salary: UGX ${dailySalary.toFixed(2)}</li>
+          <li>Week Off Pay: +UGX ${weekOffPay.toFixed(2)}</li>
+          <li>Paid Leave Pay: +UGX ${paidLeavePay.toFixed(2)}</li>
+          <li>Casual Leave Pay: +UGX ${casualLeavePay.toFixed(2)}</li>
+          <li>No Pay Deduction: -UGX ${noPayDeduction.toFixed(2)}</li>
+          <li>Late Minutes Deduction: -UGX ${lateMinutesDeduction.toFixed(2)}</li>
+          <li>Double Pay Addition: +UGX ${doublePayAddition.toFixed(2)}</li>
+        </ul>
+      `;
+    }
+  </script>
+</body>
+</html>
